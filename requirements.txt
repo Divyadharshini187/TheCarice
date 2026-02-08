@@ -1,0 +1,11 @@
+
+livekit>=0.19.1
+livekit-agents[silero,google]~=1.2
+livekit-plugins-google
+livekit-plugins-silero
+python-dotenv
+livekit-api
+flask[async]
+flask-cors
+uvicorn
+livekit-plugins-noise-cancellation~=0.2
