@@ -23,7 +23,7 @@ const CameraView = () => {
             ref={videoRef}
             autoPlay
             playsInline
-            style={{ width: "100%", height: "100%", objectFit: "cover" }}
+            style={{ width: "400%", height: "400%", objectFit: "cover" }}
         />
     );
 };

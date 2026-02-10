@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User, Mail, Phone, MapPin, Package, LogOut, ArrowLeft } from 'lucide-react';
+import styles from './Home.module.css'; // Reusing some animations/utilities if helpful or just use index.css
 
 const Profile = () => {
     const navigate = useNavigate();
@@ -17,122 +18,134 @@ const Profile = () => {
     };
 
     return (
-        <div style={{
-            padding: '40px 20px',
-            maxWidth: '600px',
-            margin: '0 auto',
-            fontFamily: 'Outfit, Inter, sans-serif',
-            minHeight: '100vh',
-            background: 'linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%)'
-        }}>
+        <div className="animate-fade" style={{ padding: '80px 40px', maxWidth: '800px', margin: '0 auto' }}>
             <button
                 onClick={() => navigate('/')}
                 style={{
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '8px',
-                    background: 'none',
-                    border: 'none',
-                    color: '#636E72',
-                    fontWeight: '600',
+                    gap: '12px',
+                    background: 'white',
+                    border: '1px solid rgba(0,0,0,0.05)',
+                    padding: '12px 24px',
+                    borderRadius: 'var(--radius-full)',
+                    color: 'var(--text-muted)',
+                    fontWeight: '700',
                     cursor: 'pointer',
-                    marginBottom: '30px'
+                    marginBottom: '40px',
+                    boxShadow: 'var(--shadow-sm)',
+                    transition: 'all 0.3s ease'
                 }}
             >
-                <ArrowLeft size={20} /> Back to Shop
+                <ArrowLeft size={20} /> Back to Dashboard
             </button>
 
-            <div style={{
-                background: 'white',
-                padding: '40px',
-                borderRadius: '32px',
-                boxShadow: '0 20px 40px rgba(0,0,0,0.05)',
-                marginBottom: '30px'
+            <div className="glass" style={{
+                padding: '50px',
+                borderRadius: 'var(--radius-lg)',
+                marginBottom: '40px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '40px'
             }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '25px', marginBottom: '40px' }}>
-                    <div style={{
-                        width: '100px',
-                        height: '100px',
-                        borderRadius: '30px',
-                        background: 'linear-gradient(135deg, #FF4757 0%, #FF6B81 100%)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        color: 'white',
-                        boxShadow: '0 10px 20px rgba(255, 71, 87, 0.2)'
-                    }}>
-                        <User size={50} />
-                    </div>
-                    <div>
-                        <h2 style={{ fontSize: '2rem', fontWeight: '800', margin: 0, color: '#2D3436' }}>{user.name}</h2>
-                        <p style={{ margin: '5px 0 0 0', color: '#636E72', fontWeight: '500' }}>Premium Member</p>
-                    </div>
+                <div style={{
+                    width: '140px',
+                    height: '140px',
+                    borderRadius: '40px',
+                    background: 'linear-gradient(135deg, var(--primary) 0%, #FF6B81 100%)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: 'white',
+                    boxShadow: '0 20px 40px var(--primary-glow)',
+                    flexShrink: 0
+                }}>
+                    <User size={70} />
                 </div>
-
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '15px', color: '#636E72' }}>
-                        <Mail size={20} /> <span>{user.email}</span>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '15px', color: '#636E72' }}>
-                        <Phone size={20} /> <span>{user.phone}</span>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '15px', color: '#636E72' }}>
-                        <MapPin size={20} /> <span>{user.address}</span>
+                <div>
+                    <span style={{
+                        color: 'var(--primary)',
+                        fontWeight: '800',
+                        textTransform: 'uppercase',
+                        fontSize: '0.85rem',
+                        letterSpacing: '2px'
+                    }}>Premium Member</span>
+                    <h2 style={{ fontSize: '3.5rem', fontWeight: '900', margin: '5px 0', letterSpacing: '-2px' }}>{user.name}</h2>
+                    <div style={{ display: 'flex', gap: '20px', marginTop: '15px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-muted)', fontWeight: '500' }}>
+                            <Mail size={18} /> {user.email}
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-muted)', fontWeight: '500' }}>
+                            <Phone size={18} /> {user.phone}
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div style={{
-                background: 'white',
-                padding: '40px',
-                borderRadius: '32px',
-                boxShadow: '0 20px 40px rgba(0,0,0,0.05)'
+            <div className="glass" style={{
+                padding: '50px',
+                borderRadius: 'var(--radius-lg)'
             }}>
-                <h3 style={{ fontSize: '1.4rem', fontWeight: '800', marginBottom: '25px', color: '#2D3436', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <Package size={24} color="#FF4757" /> Recent Orders
-                </h3>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
+                    <h3 style={{ fontSize: '2rem', fontWeight: '900', letterSpacing: '-1px' }}>Recent Orders</h3>
+                    <Package size={32} color="var(--primary)" />
+                </div>
 
-                {user.orders.map((order, index) => (
-                    <div key={index} style={{
-                        padding: '20px',
-                        borderRadius: '20px',
-                        background: '#F8F9FA',
-                        marginBottom: '15px',
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center'
-                    }}>
-                        <div>
-                            <div style={{ fontWeight: '700', color: '#2D3436' }}>{order.id}</div>
-                            <div style={{ fontSize: '0.9rem', color: '#636E72' }}>{order.date}</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                    {user.orders.map((order, index) => (
+                        <div key={index} className="animate-slide-up" style={{
+                            padding: '24px',
+                            borderRadius: 'var(--radius-md)',
+                            background: 'rgba(255,255,255,0.5)',
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            border: '1px solid rgba(0,0,0,0.03)',
+                            animationDelay: `${index * 0.1}s`
+                        }}>
+                            <div>
+                                <div style={{ fontWeight: '800', fontSize: '1.2rem', color: 'var(--text-main)' }}>{order.id}</div>
+                                <div style={{ color: 'var(--text-muted)', fontWeight: '500' }}>{order.date}</div>
+                            </div>
+                            <div style={{ textAlign: 'right' }}>
+                                <div style={{ fontWeight: '900', fontSize: '1.4rem', color: 'var(--primary)' }}>₹{order.total}</div>
+                                <div style={{
+                                    fontSize: '0.85rem',
+                                    color: '#10B981',
+                                    fontWeight: '800',
+                                    background: 'rgba(16, 185, 129, 0.1)',
+                                    padding: '4px 12px',
+                                    borderRadius: 'var(--radius-full)'
+                                }}>{order.status}</div>
+                            </div>
                         </div>
-                        <div style={{ textAlign: 'right' }}>
-                            <div style={{ fontWeight: '800', color: '#FF4757' }}>${order.total.toFixed(2)}</div>
-                            <div style={{ fontSize: '0.8rem', color: '#2ECC71', fontWeight: '600' }}>{order.status}</div>
-                        </div>
-                    </div>
-                ))}
+                    ))}
+                </div>
             </div>
 
             <button
                 style={{
-                    marginTop: '30px',
+                    marginTop: '40px',
                     width: '100%',
-                    padding: '18px',
-                    background: 'none',
-                    color: '#FF4757',
-                    border: '2px solid rgba(255, 71, 87, 0.2)',
-                    borderRadius: '20px',
-                    fontSize: '1.1rem',
-                    fontWeight: '700',
+                    padding: '24px',
+                    background: 'var(--text-main)',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: 'var(--radius-lg)',
+                    fontSize: '1.2rem',
+                    fontWeight: '800',
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    gap: '10px'
+                    gap: '12px',
+                    transition: 'all 0.3s ease',
+                    boxShadow: 'var(--shadow-lg)'
                 }}
+                onMouseEnter={(e) => e.target.style.transform = 'translateY(-4px)'}
+                onMouseLeave={(e) => e.target.style.transform = 'translateY(0)'}
             >
-                <LogOut size={20} /> Sign Out
+                <LogOut size={24} /> Sign Out Account
             </button>
         </div>
     );

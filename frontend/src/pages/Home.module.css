@@ -1,22 +1,269 @@
-@keyframes slideUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
+.homeContainer {
+    width: 100%;
+}
+
+.heroSection {
+    padding: 3rem 4rem 2rem;
+    background: linear-gradient(180deg, rgba(255, 71, 87, 0.05) 0%, transparent 100%);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 3rem;
+}
+
+.heroContent {
+    max-width: 900px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.badge {
+    display: inline-block;
+    padding: 0.6rem 1.2rem;
+    background: white;
+    box-shadow: var(--shadow-sm);
+    border-radius: var(--radius-full);
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--primary);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 2rem;
+}
+
+.mainTitle {
+    font-size: 6rem;
+    line-height: 1;
+    letter-spacing: -3px;
+    margin-bottom: 1.5rem;
+    background: linear-gradient(135deg, #1E293B 0%, #334155 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.heroSubtitle {
+    font-size: 1.75rem;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.hubContainer {
+    width: 100%;
+    max-width: 1100px;
+}
+
+.controlHub {
+    padding: 2.5rem;
+    border-radius: 2.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+.hubHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.hubStatus {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--text-main);
+}
+
+.statusDot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #CBD5E1;
+}
+
+.statusDot.active {
+    background: #10B981;
+    box-shadow: 0 0 12px rgba(16, 185, 129, 0.6);
+    animation: blink 1.5s infinite;
+}
+
+.hubMain {
+    display: flex;
+    gap: 3rem;
+    align-items: center;
+}
+
+.cameraWrapper {
+    width: 520px;
+    height: 290px;
+    border-radius: 24px;
+    overflow: hidden;
+    background: #000;
+    box-shadow: var(--shadow-lg);
+    border: 4px solid white;
+}
+
+.voiceControls {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.micTrigger {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: none;
+    color: var(--primary);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.micTrigger:hover {
+    transform: scale(1.1);
+    color: white;
+    background: var(--primary);
+}
+
+.micTrigger.listening {
+    background: var(--primary);
+    color: white;
+    animation: pulse 2s infinite;
+}
+
+.statusPrimary {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--text-main);
+}
+
+.statusSecondary {
+    color: var(--text-muted);
+}
+
+.menuSection {
+    padding: 4rem;
+    background: white;
+    border-radius: 4rem 4rem 0 0;
+    box-shadow: 0 -20px 40px rgba(0, 0, 0, 0.02);
+}
+
+.menuHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 3.5rem;
+}
+
+.sectionTitle {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.divider {
+    width: 80px;
+    height: 6px;
+    background: var(--primary);
+    border-radius: 3px;
+}
+
+.categoryFilters {
+    display: flex;
+    gap: 1rem;
+}
+
+.filterBtn {
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--radius-full);
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.filterBtn.active {
+    background: var(--primary) !important;
+    color: white;
+}
+
+.menuGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2.5rem;
+}
+
+.assistantOverlay {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(12px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.assistantDialog {
+    width: 100%;
+    max-width: 600px;
+    padding: 4rem;
+    border-radius: 3rem;
+    position: relative;
+}
+
+.closeBtn {
+    position: absolute;
+    top: 2rem;
+    right: 2rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: white;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.closeBtn:hover {
+    background: var(--primary);
+    transform: rotate(90deg);
+}
+
+@keyframes blink {
+
+    0%,
+    100% {
+        opacity: 1;
     }
 
-    to {
-        opacity: 1;
-        transform: translateY(0);
+    50% {
+        opacity: 0.4;
     }
 }
 
-@keyframes pulseGlow {
+@keyframes pulse {
     0% {
-        box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.5);
+        box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.4);
     }
 
     70% {
-        box-shadow: 0 0 0 15px rgba(255, 71, 87, 0);
+        box-shadow: 0 0 0 20px rgba(255, 71, 87, 0);
     }
 
     100% {
@@ -24,250 +271,35 @@
     }
 }
 
-.container {
-    padding: 0;
-    display: flex;
-    min-height: 100vh;
-}
-
-.sidebar {
-    width: 80px;
-    background: white;
-    border-right: 1px solid rgba(0, 0, 0, 0.05);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 2rem 0;
-    gap: 2.5rem;
-    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.02);
-    z-index: 10;
-}
-
-.navIcon {
-    color: var(--text-muted);
-    transition: all 0.3s ease;
-    cursor: pointer;
-    padding: 12px;
-    border-radius: 12px;
-}
-
-.navIcon:hover,
-.navIcon.active {
-    color: var(--primary);
-    background: rgba(255, 71, 87, 0.05);
-    transform: scale(1.1);
-}
-
-.mainContent {
-    flex: 1;
-    padding: 3rem;
-    overflow-y: auto;
-}
-
-
-.header {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 4rem;
-    gap: 1.5rem;
-    animation: slideUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-
-.titleSection {
-    text-align: left;
-}
-
-.titleSection h1 {
-    font-size: 3.5rem;
-    font-weight: 800;
-    letter-spacing: -0.04em;
-    background: linear-gradient(135deg, var(--text-main) 0%, #636E72 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    margin-bottom: 0.5rem;
-}
-
-
-.titleSection p {
-    font-size: 1.25rem;
-    color: var(--text-muted);
-    font-weight: 500;
-}
-
-.controlHub {
-    align-self: flex-end;
-    display: flex;
-    align-items: center;
-    gap: 2.5rem;
-    background: var(--glass-bg);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    padding: 2rem;
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--glass-border);
-    box-shadow: var(--shadow-lg);
-    width: 100%;
-    max-width: 700px;
-}
-
-
-.menuSection {
-    background: var(--glass-bg);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    padding: 2rem;
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--glass-border);
-    box-shadow: var(--shadow-md);
-    animation: slideUp 1s cubic-bezier(0.2, 0.8, 0.2, 1) 0.1s backwards;
-}
-
-.menuHeader {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2rem;
-}
-
-.menuHeader h3 {
-    font-size: 2rem;
-    font-weight: 800;
-    color: var(--text-main);
-}
-
-.menuGrid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 2rem;
-}
-
-.micButton {
-    width: 200px;
-    height: 200px;
-    border-radius: 50%;
-    background: var(--primary);
-    border: none;
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 15px 35px rgba(255, 71, 87, 0.4);
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-.micButton svg {
-    width: 48px;
-    height: 48px;
-}
-
-
-.micButton.listening {
-    animation: pulseGlow 2s infinite;
-    background: var(--primary-dark);
-    transform: scale(1.1);
-}
-
-.micButton:hover {
-    transform: translateY(-5px) scale(1.05);
-    box-shadow: 0 15px 30px rgba(255, 71, 87, 0.5);
-}
-
-.statusInfo {
-    display: flex;
-    flex-direction: column;
-}
-
-.statusMain {
-    font-weight: 700;
-    font-size: 1rem;
-    color: var(--text-main);
-}
-
-.statusInfo {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    flex: 1;
-}
-
-.statusMain {
-    font-weight: 800;
-    font-size: 1.25rem;
-    color: var(--text-main);
-}
-
-.statusSub {
-    color: var(--text-muted);
-    font-size: 1rem;
-    font-weight: 500;
-}
-
-
-.cameraCard {
-    width: 300px;
-    height: 200px;
-    border-radius: var(--radius-md);
-    overflow: hidden;
-    background: #000;
-    border: 4px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-}
-
-
-.assistantOverlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.4);
-    backdrop-filter: blur(8px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-    padding: 2rem;
-}
-
-.assistantContainer {
-    width: 100%;
-    max-width: 500px;
-    background: #111;
-    border-radius: var(--radius-lg);
-    padding: 3rem;
-    position: relative;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
-}
-
-.closeAssistant {
-    position: absolute;
-    top: 1.5rem;
-    right: 1.5rem;
-    background: rgba(255, 255, 255, 0.05);
-    border: none;
-    color: white;
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-}
-
-.closeAssistant:hover {
-    background: var(--primary);
-    transform: rotate(90deg);
+@media (max-width: 1200px) {
+    .hubMain {
+        flex-direction: column;
+        align-items: flex-start;
+    }
 }
 
 @media (max-width: 768px) {
-    .header {
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
+    .mainTitle {
+        font-size: 3.5rem;
     }
 
-    .controlHub {
+    .heroSection {
+        padding: 4rem 2rem;
+    }
+
+    .menuSection {
+        padding: 3rem 2rem;
+    }
+
+    .menuHeader {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 2rem;
+    }
+
+    .cameraWrapper {
         width: 100%;
-        justify-content: center;
+        height: auto;
+        aspect-ratio: 16/9;
     }
 }

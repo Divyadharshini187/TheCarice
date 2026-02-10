@@ -14,7 +14,6 @@ const ProductCard = ({ name, price, category, image, onClick }) => {
             </div>
             <div className={styles.footer}>
                 <p className={styles.price}>₹{price}</p>
-                <div className={styles.addButton}>+</div>
             </div>
         </div>
     );

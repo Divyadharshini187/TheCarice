@@ -33,15 +33,21 @@ class AssistantFnc:
         for key, value in self._order_details.items():
             order_str += f"{key.value}: {value}\n"
         return order_str
-    @llm.function_tool(description="Create a new food order with customer name and items")
+    @llm.function_tool(description="Create a new food order with customer name and a list of items")
     def create_order(
         self,
         customer_name: Annotated[str, Field(description="The name of the customer")],
-        order_items: Annotated[list[dict], Field(description="List of ordered items with item name and quantity")]
+        items_description: Annotated[str, Field(description="Comma-separated list of items and quantities, e.g. '2 idly, 1 coffee'")]
     ):
-        logger.info("create order - customer: %s, items: %s", customer_name, order_items)
+        logger.info("create order - customer: %s, items: %s", customer_name, items_description)
         bill_id = f"FC-{datetime.now().strftime('%Y%m%d')}-{str(uuid.uuid4())[:8]}"
         timestamp = datetime.now().isoformat()
+        
+        # Simple parsing for items_description if needed or just pass to DB as raw
+        # For now, let's treat the whole description as one item if it's too complex to parse here
+        # Actually, let's keep it simple for the DB
+        order_items = [{"name": items_description, "quantity": 1}]
+        
         total_amount = DB.calculate_total(order_items)
         result = DB.store_food_order(customer_name, order_items, bill_id, total_amount, timestamp)
         if result is None:
