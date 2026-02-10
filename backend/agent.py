@@ -1,6 +1,6 @@
 from dotenv import load_dotenv
 from livekit import agents, rtc
-from livekit.agents import AgentServer, AgentSession, Agent, room_io
+from livekit.agents import llm, AgentServer, AgentSession, Agent, room_io
 from livekit.plugins import (
     google,
     noise_cancellation,
@@ -8,6 +8,7 @@ from livekit.plugins import (
 )
 import os 
 import asyncio
+from api import AssistantFnc
 
 load_dotenv(".env.local")
 
@@ -38,10 +39,11 @@ async def my_agent(ctx: agents.JobContext):
             api_key=os.getenv("GOOGLE_API_KEY"),
         ),
         vad=silero.VAD.load(),
+        tools=llm.find_function_tools(AssistantFnc(ctx.room)),
         allow_interruptions=True,
-        min_interruption_duration=0.3, # Snappier interruptions
-        min_endpointing_delay=0.5,      # Quick turn-taking
-        max_endpointing_delay=1.5,      # Don't wait too long if user pauses
+        min_interruption_duration=0.3,
+        min_endpointing_delay=0.5,
+        max_endpointing_delay=1.5,
     )
 
     await session.start(
@@ -62,21 +64,17 @@ async def my_agent(ctx: agents.JobContext):
     )
 
     # ♾️ Keep the session alive until the room disconnects or an error occurs
-    # This prevents the "agent stopped working" issue caused by premature exit
     shutdown_evt = asyncio.Event()
 
     @session.on("close")
     def on_close(event):
-        print(f"Session closed: {event.reason}")
         shutdown_evt.set()
 
     @ctx.room.on("disconnected")
     def on_disconnected():
-        print("Room disconnected")
         shutdown_evt.set()
 
     await shutdown_evt.wait()
-    print("Agent task completed")
 
 if __name__ == "__main__":
     agents.cli.run_app(server)

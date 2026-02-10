@@ -5,10 +5,11 @@ import {
     RoomAudioRenderer,
     VoiceAssistantControlBar,
     useVoiceAssistant,
+    useDataChannel,
 } from '@livekit/components-react';
 import '@livekit/components-styles';
 
-const LiveKitAssistant = ({ token, serverUrl, onDisconnect }) => {
+const LiveKitAssistant = ({ token, serverUrl, onDisconnect, onDataReceived }) => {
     return (
         <LiveKitRoom
             token={token}
@@ -20,14 +21,28 @@ const LiveKitAssistant = ({ token, serverUrl, onDisconnect }) => {
             data-lk-theme="default"
             style={{ height: '300px', width: '100%', borderRadius: '12px', overflow: 'hidden', background: 'rgba(0,0,0,0.5)' }}
         >
-            <AssistantInner />
+            <AssistantInner onDataReceived={onDataReceived} />
             <RoomAudioRenderer />
         </LiveKitRoom>
     );
 };
 
-const AssistantInner = () => {
+const AssistantInner = ({ onDataReceived }) => {
     const { state, audioTrack } = useVoiceAssistant();
+
+    useDataChannel((msg) => {
+        if (msg.payload) {
+            try {
+                const text = new TextDecoder().decode(msg.payload);
+                const data = JSON.parse(text);
+                if (data.type === 'order_update' && onDataReceived) {
+                    onDataReceived(data);
+                }
+            } catch (e) {
+                console.error("Error parsing data message:", e);
+            }
+        }
+    });
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: '20px', padding: '20px' }}>

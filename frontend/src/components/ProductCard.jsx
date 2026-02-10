@@ -1,31 +1,21 @@
 import React from 'react';
+import styles from './ProductCard.module.css';
 
 const ProductCard = ({ name, price, category, image, onClick }) => {
     return (
-        <div
-            onClick={onClick}
-            style={{
-                background: 'white',
-                borderRadius: '12px',
-                padding: '1rem',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                cursor: 'pointer',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '0.5rem'
-            }}
-        >
-            <div style={{
-                height: '100px',
-                borderRadius: '8px',
-                backgroundImage: image || 'linear-gradient(135deg, #eee, #eee)',
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                marginBottom: '0.5rem'
-            }} />
-            <h4 style={{ margin: 0 }}>{name}</h4>
-            <p style={{ margin: 0, color: '#666', fontSize: '0.9rem' }}>{category}</p>
-            <p style={{ margin: 0, fontWeight: 'bold', color: '#FF4757' }}>₹{price}</p>
+        <div className={styles.card} onClick={onClick}>
+            <div
+                className={styles.image}
+                style={{ backgroundImage: image || 'linear-gradient(135deg, #eee, #eee)' }}
+            />
+            <div className={styles.details}>
+                <p className={styles.category}>{category}</p>
+                <h4 className={styles.name}>{name}</h4>
+            </div>
+            <div className={styles.footer}>
+                <p className={styles.price}>₹{price}</p>
+                <div className={styles.addButton}>+</div>
+            </div>
         </div>
     );
 };

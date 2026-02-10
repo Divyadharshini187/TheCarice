@@ -10,7 +10,10 @@ from dotenv import load_dotenv
 
 # Load environment variables from the backend directory
 backend_dir = os.path.dirname(os.path.abspath(__file__))
-load_dotenv(os.path.join(backend_dir, ".env.local"))
+env_path = os.path.join(backend_dir, ".env.local")
+print(f"Loading env from: {env_path}")
+load_dotenv(env_path)
+print(f"URL loaded: {os.getenv('LIVEKIT_URL') is not None}")
 # Define paths relative to backend directory
 project_root = os.path.dirname(backend_dir)
 static_folder = os.path.join(project_root, 'frontend', 'dist')
@@ -41,24 +44,36 @@ def get_token():
         lk_url = os.getenv('LIVEKIT_URL')
         
         if not api_key or not api_secret or not lk_url:
-            logger.error("Missing LiveKit credentials in .env.local")
-            return jsonify({"error": "Configuration error: Missing LiveKit credentials"}), 500
+            missing = []
+            if not api_key: missing.append("LIVEKIT_API_KEY")
+            if not api_secret: missing.append("LIVEKIT_API_SECRET")
+            if not lk_url: missing.append("LIVEKIT_URL")
+            error_msg = f"Configuration error: Missing environment variables: {', '.join(missing)}"
+            logger.error(error_msg)
+            return jsonify({"error": error_msg}), 500
 
-        token = api.AccessToken(
-            api_key,
-            api_secret
-        ).with_identity(participant_name).with_name(participant_name).with_grants(api.VideoGrants(
-            room_join=True,
-            room=room_name,
-        ))
-        
-        return jsonify({
-            "token": token.to_jwt(),
-            "url": lk_url
-        })
+        try:
+            token = api.AccessToken(
+                api_key,
+                api_secret
+            ).with_identity(participant_name).with_name(participant_name).with_grants(api.VideoGrants(
+                room_join=True,
+                room=room_name,
+            ))
+            
+            jwt_token = token.to_jwt()
+            logger.info("Token generated successfully")
+            
+            return jsonify({
+                "token": jwt_token,
+                "url": lk_url
+            })
+        except Exception as api_err:
+            logger.error(f"LiveKit API Error: {str(api_err)}")
+            return jsonify({"error": f"LiveKit Service Error: {str(api_err)}"}), 500
     except Exception as e:
-        logger.error(f"Error generating token: {str(e)}")
-        return jsonify({"error": str(e)}), 500
+        logger.error(f"Unexpected error in get_token: {str(e)}")
+        return jsonify({"error": f"Internal Server Error: {str(e)}"}), 500
 
 @app.route('/api/orders', methods=['POST'])
 def create_order():
@@ -109,9 +124,6 @@ def get_order(bill_id):
     else:
         return jsonify({"error": "Order not found"}), 404
 
-@app.route('/<path:path>')
-def serve_static(path):
-    return send_from_directory(app.static_folder,path)
 
 @app.route('/', defaults={'path':''})
 @app.route('/<path:path>')

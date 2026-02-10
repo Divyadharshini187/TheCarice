@@ -14,20 +14,11 @@ import Payment from './pages/Payment';
 import LiveKitModal from './components/LiveKitModal.jsx';
 
 function App() {
-  const [showSupport, setShowSupport] = useState(false);
-  const handleSupportClick = (userInput) => {
-    if(userInput.toLowerCase().includes("vanakkam")){
-
-    
-    setShowSupport(true);
-    console.log("Support triggered via greeting!");
-    }
-  }
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Layout />}>
-          <Route index element={<Home setShowSupport={setShowSupport} />} />
+          <Route index element={<Home />} />
           <Route path="login" element={<Login />} />
           <Route path="signup" element={<Signup />} />
           <Route path="profile" element={<Profile />} />
@@ -39,7 +30,6 @@ function App() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
       </Routes>
-      {showSupport && <LiveKitModal setShowSupport={setShowSupport} />}
     </BrowserRouter>
   );
 }

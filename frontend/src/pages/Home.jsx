@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useRef, useContext } from 'react';
+import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './Home.module.css';
 
@@ -6,7 +6,7 @@ import CameraView from '../components/CameraView.jsx';
 import VoiceInput from '../components/VoiceInput.jsx';
 import ProductCard from '../components/ProductCard.jsx';
 
-import { Mic, X } from 'lucide-react';
+import { Mic, X, LayoutDashboard, Utensils, User, Settings, Store } from 'lucide-react';
 import LiveKitAssistant from '../components/LiveKitAssistant.jsx';
 
 import dosaiImg from '../assets/dosai.jpg';
@@ -20,18 +20,19 @@ import chapathiImg from '../assets/chapathi.jpg';
 import varietyRiceImg from '../assets/variety_rice.jpg';
 import mealsImg from '../assets/meals.jpg';
 import kothuParottaImg from '../assets/kothu_parotta.jpg';
+
 const MOCK_MENU = [
-  { id: 1, name: "Dosai", price: 60, category: "Breakfast", color: "#FF5733", image: `url(${dosaiImg})` },
-  { id: 2, name: "Poori", price: 60, category: "Breakfast", color: "#33FF57", image: `url(${pooriImg})` },
-  { id: 3, name: "Ven Pongal", price: 50, category: "Breakfast", color: "#3357FF", image: `url(${venPongalImg})` },
-  { id: 4, name: "Watermelon juice", price: 30, category: "Drinks", color: "#FF33A6", image: `url(${watermelonImg})` },
-  { id: 5, name: "Idly", price: 30, category: "Breakfast", color: "#FF5733", image: `url(${idlyImg})` },
-  { id: 6, name: "Roast", price: 40, category: "Breakfast", color: "#FF5733", image: `url(${roastImg})` },
-  { id: 7, name: "Parotta", price: 30, category: "Lunch", color: "#FF5733", image: `url(${parottaImg})` },
-  { id: 8, name: "Chappathi", price: 30, category: "Lunch", color: "#FF5733", image: `url(${chapathiImg})` },
-  { id: 9, name: "Variety Rice", price: 30, category: "Lunch", color: "#FF5733", image: `url(${varietyRiceImg})` },
-  { id: 10, name: "Meals", price: 60, category: "Lunch", color: "#FF5733", image: `url(${mealsImg})` },
-  { id: 11, name: "Kothu parotta", price: 50, category: "Lunch", color: "#FF5733", image: `url(${kothuParottaImg})` },
+  { id: 1, name: "Dosai", price: 60, category: "Breakfast", color: "#FF5733", image: `url(${dosaiImg})`, stock: 10 },
+  { id: 2, name: "Poori", price: 60, category: "Breakfast", color: "#33FF57", image: `url(${pooriImg})`, stock: 10 },
+  { id: 3, name: "Ven Pongal", price: 50, category: "Breakfast", color: "#3357FF", image: `url(${venPongalImg})`, stock: 10 },
+  { id: 4, name: "Watermelon juice", price: 30, category: "Drinks", color: "#FF33A6", image: `url(${watermelonImg})`, stock: 10 },
+  { id: 5, name: "Idly", price: 30, category: "Breakfast", color: "#FF5733", image: `url(${idlyImg})`, stock: 10 },
+  { id: 6, name: "Roast", price: 40, category: "Breakfast", color: "#FF5733", image: `url(${roastImg})`, stock: 10 },
+  { id: 7, name: "Parotta", price: 30, category: "Lunch", color: "#FF5733", image: `url(${parottaImg})`, stock: 10 },
+  { id: 8, name: "Chappathi", price: 30, category: "Lunch", color: "#FF5733", image: `url(${chapathiImg})`, stock: 10 },
+  { id: 9, name: "Variety Rice", price: 30, category: "Lunch", color: "#FF5733", image: `url(${varietyRiceImg})`, stock: 10 },
+  { id: 10, name: "Meals", price: 60, category: "Lunch", color: "#FF5733", image: `url(${mealsImg})`, stock: 10 },
+  { id: 11, name: "Kothu parotta", price: 50, category: "Lunch", color: "#FF5733", image: `url(${kothuParottaImg})`, stock: 10 },
 ];
 
 const Home = ({ setShowSupport }) => {
@@ -41,6 +42,21 @@ const Home = ({ setShowSupport }) => {
   const [lkToken, setLkToken] = useState(null);
   const [lkUrl, setLkUrl] = useState(null);
   const [showAssistant, setShowAssistant] = useState(false);
+  const [assistantItems, setAssistantItems] = useState([]);
+  const [products, setProducts] = useState(MOCK_MENU);
+  const [query, setQuery] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('All');
+  const [inStockOnly, setInStockOnly] = useState(false);
+  const [sortBy, setSortBy] = useState('featured');
+
+  const handleDisconnect = useCallback(() => {
+    setShowAssistant(false);
+    setIsMicActive(false);
+    if (assistantItems.length > 0) {
+      console.log("Navigating to order confirmation on disconnect with items:", assistantItems);
+      navigate('/order-confirmation', { state: { items: assistantItems } });
+    }
+  }, [assistantItems, navigate]);
 
   const fetchToken = async () => {
     try {
@@ -63,11 +79,6 @@ const Home = ({ setShowSupport }) => {
     }
   };
 
-  // ---- Menu matching helpers ----
-
-
-
-  // ---- Product matching helpers (used by voice input) ----
   const normalize = (s) => s.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim();
 
   const levenshtein = (a, b) => {
@@ -95,8 +106,6 @@ const Home = ({ setShowSupport }) => {
     const matches = [];
     for (const item of products) {
       const name = normalize(item.name);
-
-      // exact token match
       for (const t of tokens) {
         if (name.split(/\s+/).includes(t)) {
           matches.push(item);
@@ -104,12 +113,10 @@ const Home = ({ setShowSupport }) => {
         }
       }
       if (matches.includes(item)) continue;
-
       if (cleaned.includes(name) || name.includes(cleaned)) {
         matches.push(item);
         continue;
       }
-
       const distance = levenshtein(name, cleaned);
       const threshold = Math.max(1, Math.floor(name.length * 0.35));
       if (distance <= threshold) {
@@ -122,19 +129,15 @@ const Home = ({ setShowSupport }) => {
   const handleVoiceOrder = useCallback(
     (text) => {
       if (!text || text.trim() === '') return;
-
       const normalizedText = text.toLowerCase();
       console.log('Processing voice:', normalizedText);
-
       if (normalizedText.includes('vanakkam')) {
         setStatus('Vanakkam! Connecting to assistant...');
         setIsMicActive(true);
         fetchToken();
         return;
       }
-
       const items = matchProducts(text);
-
       if (items.length > 0) {
         console.log('Matched products:', items.map((i) => i.name));
         navigate('/order-confirmation', { state: { items } });
@@ -157,9 +160,7 @@ const Home = ({ setShowSupport }) => {
     }
   };
 
-  // categories derived from products
-  const categories = ['All', ...Array.from(new Set(MOCK_PRODUCTS.map((p) => p.category)))];
-
+  const categories = ['All', ...Array.from(new Set(MOCK_MENU.map((p) => p.category)))];
   const handleAddToCart = (productId) => {
     setProducts((prev) =>
       prev.map((p) => {
@@ -171,46 +172,85 @@ const Home = ({ setShowSupport }) => {
     );
   };
 
-  const applyFilters = (list) => {
-    return list
-      .filter((p) => {
-        if (inStockOnly && p.stock <= 0) return false;
-        if (categoryFilter !== 'All' && p.category !== categoryFilter) return false;
-        if (query.trim() !== '') {
-          const q = normalize(query);
-          const name = normalize(p.name);
-          return name.includes(q) || q.split(/\s+/).some((t) => name.includes(t));
-        }
-        return true;
-      })
-      .sort((a, b) => {
-        if (sortBy === 'price-asc') return a.price - b.price;
-        if (sortBy === 'price-desc') return b.price - a.price;
-        if (sortBy === 'name-asc') return a.name.localeCompare(b.name);
-        if (sortBy === 'name-desc') return b.name.localeCompare(a.name);
-        return b.stock - a.stock; // featured -> show higher stock first
+  const handleAssistantData = useCallback((data) => {
+    if (!data) return;
+    if (data.items && Array.isArray(data.items)) {
+      setAssistantItems((prev) => {
+        const newItems = data.items.map((it, idx) => {
+          const found = MOCK_MENU.find((p) => normalize(p.name) === normalize(it.name)) || MOCK_MENU.find((p) => p.id === it.id);
+          return found ? { ...found, quantity: it.quantity || 1 } : { id: Date.now() + idx, name: it.name, price: it.price || 0, category: it.category || 'Misc', quantity: it.quantity || 1 };
+        });
+        return [...prev, ...newItems];
       });
-  };
+    }
+  }, []);
 
-  const visibleProducts = applyFilters(products);
+  const filteredProducts = products
+    .filter((p) => (categoryFilter === 'All' ? true : p.category === categoryFilter))
+    .filter((p) => (inStockOnly ? p.stock > 0 : true))
+    .filter((p) => (query && query.trim() !== '' ? normalize(p.name).includes(normalize(query)) : true));
 
   return (
     <div className={styles.container}>
-      <header className={styles.header}>
-        <h1>The Carice — Costume Shop</h1>
-        <p>{status}</p>
-      </header>
+      <aside className={styles.sidebar}>
+        <LayoutDashboard className={`${styles.navIcon} ${styles.active}`} size={28} />
+        <Store className={styles.navIcon} size={28} onClick={() => navigate('/merchant')} />
+        <Utensils className={styles.navIcon} size={28} onClick={() => navigate('/add-items')} />
+        <User className={styles.navIcon} size={28} onClick={() => navigate('/profile')} />
+        <Settings className={styles.navIcon} size={28} onClick={() => navigate('/settings')} />
+      </aside>
 
-      <div className={styles.inputs}>
-        <div className={styles.cameraBox}>
-          <CameraView />
-        </div>
-        <div className={styles.micButtonContainer}>
-          <button className={`${styles.micButton} ${isMicActive ? styles.listening : ''}`} onClick={toggleMic}>
-            <Mic size={32} />
-          </button>
-          <VoiceInput onOrder={handleVoiceOrder} isActive={!showAssistant} />
-        </div>
+      <div className={styles.mainContent}>
+        <header className={styles.header}>
+          <div className={styles.titleSection}>
+            <h1>Carice Canteen</h1>
+            <p>Experience the future of dining</p>
+          </div>
+
+          <div className={styles.controlHub}>
+            <div className={styles.cameraCard}>
+              <CameraView />
+            </div>
+
+            <div className={styles.statusInfo}>
+              <p className={styles.statusMain}>
+                {isMicActive ? 'Listening...' : 'Voice Assistant'}
+              </p>
+              <p className={styles.statusSub}>{status}</p>
+            </div>
+
+            <button
+              className={`${styles.micButton} ${isMicActive ? styles.listening : ''}`}
+              onClick={toggleMic}
+              aria-pressed={isMicActive}
+            >
+              {isMicActive ? <X size={48} /> : <Mic size={48} />}
+            </button>
+
+            {isMicActive && <VoiceInput onOrder={handleVoiceOrder} isActive={isMicActive} />}
+          </div>
+        </header>
+
+        <main className={styles.menuSection}>
+          <div className={styles.menuHeader}>
+            <h3>Today's Specials</h3>
+          </div>
+
+          <div className={styles.menuGrid}>
+            {products.map((p) => (
+              <ProductCard
+                key={p.id}
+                name={p.name}
+                price={p.price}
+                category={p.category}
+                image={p.image}
+                onClick={() => {
+                  handleAddToCart(p.id);
+                }}
+              />
+            ))}
+          </div>
+        </main>
       </div>
 
       {showAssistant && lkToken && (
@@ -223,62 +263,12 @@ const Home = ({ setShowSupport }) => {
                 setIsMicActive(false);
               }}
             >
-              <X size={24} />
+              <X size={32} />
             </button>
-            <LiveKitAssistant token={lkToken} serverUrl={lkUrl} onDisconnect={() => { setShowAssistant(false); setIsMicActive(false); }} />
+            <LiveKitAssistant token={lkToken} serverUrl={lkUrl} onDisconnect={handleDisconnect} onDataReceived={handleAssistantData} />
           </div>
         </div>
       )}
-
-      <div className={styles.menuSection}>
-        <div className={styles.menuHeader}>
-          <h3>Costumes</h3>
-          <span className={styles.seeAll}>See All</span>
-        </div>
-
-        <div className={styles.controls}>
-          <input
-            className={styles.searchInput}
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search costumes..."
-          />
-
-          <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)}>
-            {categories.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
-            ))}
-          </select>
-
-          <label className={styles.checkboxLabel}>
-            <input type="checkbox" checked={inStockOnly} onChange={(e) => setInStockOnly(e.target.checked)} /> In stock
-          </label>
-
-          <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
-            <option value="featured">Featured</option>
-            <option value="price-asc">Price: Low → High</option>
-            <option value="price-desc">Price: High → Low</option>
-            <option value="name-asc">Name: A → Z</option>
-            <option value="name-desc">Name: Z → A</option>
-          </select>
-        </div>
-
-        <div className={styles.menuGrid}>
-          {visibleProducts.map((item) => (
-            <ProductCard
-              key={item.id}
-              name={item.name}
-              price={item.price}
-              category={item.category}
-              stock={item.stock}
-              image={item.image ? item.image : `linear-gradient(135deg, ${item.color}, ${item.color}88)`}
-              onAdd={() => handleAddToCart(item.id)}
-            />
-          ))}
-        </div>
-      </div>
     </div>
   );
 };
