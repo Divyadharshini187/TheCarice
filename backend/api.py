@@ -4,7 +4,7 @@ import enum
 from typing import Annotated
 from pydantic import Field
 import logging
-from db_driver import DatabaseDriver
+from .db_driver import DatabaseDriver
 from datetime import datetime
 import uuid
 logger = logging.getLogger("food-court")
