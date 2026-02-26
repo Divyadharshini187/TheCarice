@@ -67,6 +67,7 @@
     color: var(--primary);
     font-size: 1.5rem;
     letter-spacing: -1px;
+<<<<<<< HEAD
 }
 
 .deleteBtn,
@@ -118,4 +119,6 @@
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+=======
+>>>>>>> 19ca03704f5e16fe02f507d0272e96c971f1eb96
 }

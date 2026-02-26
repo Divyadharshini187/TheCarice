@@ -10,7 +10,12 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+<<<<<<< HEAD
     padding: 1.5rem 0;
+=======
+    padding: 2.5rem 0;
+    gap: 2rem;
+>>>>>>> 19ca03704f5e16fe02f507d0272e96c971f1eb96
     box-shadow: 4px 0 20px rgba(0, 0, 0, 0.02);
     position: fixed;
     height: 100vh;
@@ -19,6 +24,7 @@
     z-index: 100;
 }
 
+<<<<<<< HEAD
 .logo {
     cursor: pointer;
     margin-bottom: 2rem;
@@ -75,6 +81,8 @@
     color: var(--primary);
 }
 
+=======
+>>>>>>> 19ca03704f5e16fe02f507d0272e96c971f1eb96
 .navIcon {
     color: var(--text-muted);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);

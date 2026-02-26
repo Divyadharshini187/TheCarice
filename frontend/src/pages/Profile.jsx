@@ -1,12 +1,19 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User, Mail, Phone, MapPin, Package, LogOut, ArrowLeft } from 'lucide-react';
+<<<<<<< HEAD
 import { translations } from '../utils/translations';
 
 const Profile = () => {
     const navigate = useNavigate();
     const language = localStorage.getItem('language') || 'en';
     const t = translations[language];
+=======
+import styles from './Home.module.css'; // Reusing some animations/utilities if helpful or just use index.css
+
+const Profile = () => {
+    const navigate = useNavigate();
+>>>>>>> 19ca03704f5e16fe02f507d0272e96c971f1eb96
 
     const user = {
         name: "Divya",
@@ -14,8 +21,13 @@ const Profile = () => {
         phone: "+91 98765 43210",
         address: "123 Food Street, Chennai",
         orders: [
+<<<<<<< HEAD
             { id: "FC-20260208-1", date: "2026-02-08", total: 120, status: t.delivered },
             { id: "FC-20260207-4", date: "2026-02-07", total: 60, status: t.delivered }
+=======
+            { id: "FC-20260208-1", date: "2026-02-08", total: 120, status: "Delivered" },
+            { id: "FC-20260207-4", date: "2026-02-07", total: 60, status: "Delivered" }
+>>>>>>> 19ca03704f5e16fe02f507d0272e96c971f1eb96
         ]
     };
 
@@ -39,7 +51,11 @@ const Profile = () => {
                     transition: 'all 0.3s ease'
                 }}
             >
+<<<<<<< HEAD
                 <ArrowLeft size={20} /> {t.backToDashboard}
+=======
+                <ArrowLeft size={20} /> Back to Dashboard
+>>>>>>> 19ca03704f5e16fe02f507d0272e96c971f1eb96
             </button>
 
             <div className="glass" style={{
@@ -71,7 +87,11 @@ const Profile = () => {
                         textTransform: 'uppercase',
                         fontSize: '0.85rem',
                         letterSpacing: '2px'
+<<<<<<< HEAD
                     }}>{t.premiumMember}</span>
+=======
+                    }}>Premium Member</span>
+>>>>>>> 19ca03704f5e16fe02f507d0272e96c971f1eb96
                     <h2 style={{ fontSize: '3.5rem', fontWeight: '900', margin: '5px 0', letterSpacing: '-2px' }}>{user.name}</h2>
                     <div style={{ display: 'flex', gap: '20px', marginTop: '15px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-muted)', fontWeight: '500' }}>
@@ -89,7 +109,11 @@ const Profile = () => {
                 borderRadius: 'var(--radius-lg)'
             }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
+<<<<<<< HEAD
                     <h3 style={{ fontSize: '2rem', fontWeight: '900', letterSpacing: '-1px' }}>{t.recentOrders}</h3>
+=======
+                    <h3 style={{ fontSize: '2rem', fontWeight: '900', letterSpacing: '-1px' }}>Recent Orders</h3>
+>>>>>>> 19ca03704f5e16fe02f507d0272e96c971f1eb96
                     <Package size={32} color="var(--primary)" />
                 </div>
 
@@ -147,7 +171,11 @@ const Profile = () => {
                 onMouseEnter={(e) => e.target.style.transform = 'translateY(-4px)'}
                 onMouseLeave={(e) => e.target.style.transform = 'translateY(0)'}
             >
+<<<<<<< HEAD
                 <LogOut size={24} /> {t.signOut}
+=======
+                <LogOut size={24} /> Sign Out Account
+>>>>>>> 19ca03704f5e16fe02f507d0272e96c971f1eb96
             </button>
         </div>
     );

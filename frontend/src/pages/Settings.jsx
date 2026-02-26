@@ -1,11 +1,18 @@
+<<<<<<< HEAD
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Settings as SettingsIcon, Bell, Moon, Languages, Shield, ArrowLeft, Key, Eye, Trash2, Share2 } from 'lucide-react';
 import { translations } from '../utils/translations';
+=======
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Settings as SettingsIcon, Bell, Moon, Languages, Shield, ArrowLeft } from 'lucide-react';
+>>>>>>> 19ca03704f5e16fe02f507d0272e96c971f1eb96
 
 const Settings = () => {
     const navigate = useNavigate();
     const [notifications, setNotifications] = useState(true);
+<<<<<<< HEAD
     const [darkMode, setDarkMode] = useState(() => {
         return localStorage.getItem('theme') === 'dark';
     });
@@ -28,6 +35,11 @@ const Settings = () => {
     }, [language]);
 
     const SettingItem = ({ icon: Icon, title, description, value, onChange, type = 'toggle', options = [], onClick }) => (
+=======
+    const [darkMode, setDarkMode] = useState(false);
+
+    const SettingItem = ({ icon: Icon, title, description, value, onChange, type = 'toggle' }) => (
+>>>>>>> 19ca03704f5e16fe02f507d0272e96c971f1eb96
         <div style={{
             display: 'flex',
             justifyContent: 'space-between',
@@ -49,7 +61,11 @@ const Settings = () => {
                 }}>
                     <Icon size={28} />
                 </div>
+<<<<<<< HEAD
                 <div style={{ cursor: type === 'link' ? 'pointer' : 'default' }} onClick={onClick}>
+=======
+                <div>
+>>>>>>> 19ca03704f5e16fe02f507d0272e96c971f1eb96
                     <h4 style={{ margin: 0, fontSize: '1.25rem', fontWeight: '800', color: 'var(--text-main)', letterSpacing: '-0.5px' }}>{title}</h4>
                     <p style={{ margin: '4px 0 0 0', fontSize: '1rem', color: 'var(--text-muted)', fontWeight: '500' }}>{description}</p>
                 </div>
@@ -83,6 +99,7 @@ const Settings = () => {
                 </button>
             )}
             {type === 'select' && (
+<<<<<<< HEAD
                 <select
                     value={value}
                     onChange={(e) => onChange(e.target.value)}
@@ -107,6 +124,9 @@ const Settings = () => {
                 <button onClick={onClick} style={{ background: 'none', border: 'none', color: 'var(--primary)', fontWeight: '800', cursor: 'pointer' }}>
                     {showSecurity ? "Hide" : "Manage"}
                 </button>
+=======
+                <div style={{ color: 'var(--text-main)', fontWeight: '800', fontSize: '1rem' }}>English</div>
+>>>>>>> 19ca03704f5e16fe02f507d0272e96c971f1eb96
             )}
         </div>
     );
@@ -119,8 +139,13 @@ const Settings = () => {
                     display: 'flex',
                     alignItems: 'center',
                     gap: '12px',
+<<<<<<< HEAD
                     background: 'var(--glass-bg)',
                     border: '1px solid var(--glass-border)',
+=======
+                    background: 'white',
+                    border: '1px solid rgba(0,0,0,0.05)',
+>>>>>>> 19ca03704f5e16fe02f507d0272e96c971f1eb96
                     padding: '12px 24px',
                     borderRadius: 'var(--radius-full)',
                     color: 'var(--text-muted)',
@@ -131,7 +156,11 @@ const Settings = () => {
                     transition: 'all 0.3s ease'
                 }}
             >
+<<<<<<< HEAD
                 <ArrowLeft size={20} /> {t.backToDashboard}
+=======
+                <ArrowLeft size={20} /> Back to Dashboard
+>>>>>>> 19ca03704f5e16fe02f507d0272e96c971f1eb96
             </button>
 
             <div className="glass" style={{
@@ -141,7 +170,11 @@ const Settings = () => {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '40px' }}>
                     <div style={{
                         background: 'var(--text-main)',
+<<<<<<< HEAD
                         color: 'var(--bg-color)',
+=======
+                        color: 'white',
+>>>>>>> 19ca03704f5e16fe02f507d0272e96c971f1eb96
                         padding: '12px',
                         borderRadius: '16px',
                         display: 'flex',
@@ -150,26 +183,41 @@ const Settings = () => {
                     }}>
                         <SettingsIcon size={32} />
                     </div>
+<<<<<<< HEAD
                     <h2 style={{ fontSize: '3rem', fontWeight: '900', margin: 0, color: 'var(--text-main)', letterSpacing: '-2px' }}>{t.settingsTitle}</h2>
+=======
+                    <h2 style={{ fontSize: '3rem', fontWeight: '900', margin: 0, letterSpacing: '-2px' }}>Settings</h2>
+>>>>>>> 19ca03704f5e16fe02f507d0272e96c971f1eb96
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
                     <SettingItem
                         icon={Bell}
+<<<<<<< HEAD
                         title={t.pushNotifications}
                         description={t.pushNotificationsDesc}
+=======
+                        title="Push Notifications"
+                        description="Receive updates about your orders and offers."
+>>>>>>> 19ca03704f5e16fe02f507d0272e96c971f1eb96
                         value={notifications}
                         onChange={setNotifications}
                     />
                     <SettingItem
                         icon={Moon}
+<<<<<<< HEAD
                         title={t.darkMode}
                         description={t.darkModeDesc}
+=======
+                        title="Dark Mode"
+                        description="Switch between light and dark themes."
+>>>>>>> 19ca03704f5e16fe02f507d0272e96c971f1eb96
                         value={darkMode}
                         onChange={setDarkMode}
                     />
                     <SettingItem
                         icon={Languages}
+<<<<<<< HEAD
                         title={t.langPref}
                         description={t.langPrefDesc}
                         type="select"
@@ -226,6 +274,21 @@ const Settings = () => {
                     onClick={() => {
                         window.location.reload();
                     }}
+=======
+                        title="Language Preference"
+                        description="Select your preferred language (English/Tamil)."
+                        type="select"
+                    />
+                    <SettingItem
+                        icon={Shield}
+                        title="Privacy & Security"
+                        description="Manage your account security and data."
+                        type="link"
+                    />
+                </div>
+
+                <button
+>>>>>>> 19ca03704f5e16fe02f507d0272e96c971f1eb96
                     style={{
                         marginTop: '50px',
                         width: '100%',
@@ -243,7 +306,11 @@ const Settings = () => {
                     onMouseEnter={(e) => e.target.style.transform = 'translateY(-4px)'}
                     onMouseLeave={(e) => e.target.style.transform = 'translateY(0)'}
                 >
+<<<<<<< HEAD
                     {t.applyChanges}
+=======
+                    Apply All Changes
+>>>>>>> 19ca03704f5e16fe02f507d0272e96c971f1eb96
                 </button>
             </div>
         </div>

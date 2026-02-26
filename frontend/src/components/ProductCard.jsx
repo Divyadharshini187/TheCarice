@@ -1,9 +1,13 @@
 import React from 'react';
+<<<<<<< HEAD
 import { Trash2, Ban, CheckCircle } from 'lucide-react';
+=======
+>>>>>>> 19ca03704f5e16fe02f507d0272e96c971f1eb96
 import styles from './ProductCard.module.css';
 
 const ProductCard = ({ name, price, category, image, available = true, stockCount = 100, onClick, onDelete, onToggleAvailability }) => {
     return (
+<<<<<<< HEAD
         <div className={`${styles.card} ${!available ? styles.unavailable : ''}`} onClick={available ? onClick : undefined}>
             {onDelete && (
                 <button
@@ -38,6 +42,16 @@ const ProductCard = ({ name, price, category, image, available = true, stockCoun
                 </div>
                 <h4 className={styles.name}>{name}</h4>
                 <p style={{ margin: '5px 0 0 0', fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: '600' }}>Stock: {stockCount}</p>
+=======
+        <div className={styles.card} onClick={onClick}>
+            <div
+                className={styles.image}
+                style={{ backgroundImage: image || 'linear-gradient(135deg, #eee, #eee)' }}
+            />
+            <div className={styles.details}>
+                <p className={styles.category}>{category}</p>
+                <h4 className={styles.name}>{name}</h4>
+>>>>>>> 19ca03704f5e16fe02f507d0272e96c971f1eb96
             </div>
             <div className={styles.footer}>
                 <p className={styles.price}>₹{price}</p>

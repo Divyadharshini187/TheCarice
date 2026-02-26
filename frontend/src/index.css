@@ -23,6 +23,7 @@
   line-height: 1.4;
 }
 
+<<<<<<< HEAD
 [data-theme='dark'] {
   --bg-color: #0F172A;
   --bg-gradient: radial-gradient(circle at 10% 20%, #0F172A 0%, #1E293B 100%);
@@ -33,6 +34,8 @@
   --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
 }
 
+=======
+>>>>>>> 19ca03704f5e16fe02f507d0272e96c971f1eb96
 * {
   box-sizing: border-box;
 }

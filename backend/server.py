@@ -134,6 +134,7 @@ def get_order(bill_id):
     else:
         return jsonify({"error": "Order not found"}), 404
 
+<<<<<<< HEAD
 @app.route('/api/merchant/orders', methods=['GET'])
 def get_all_orders():
     try:
@@ -282,6 +283,8 @@ def verify_payment():
         logger.error(f"Payment verification failed: {str(e)}")
         return jsonify({"status": "failure", "error": str(e)}), 400
 
+=======
+>>>>>>> 19ca03704f5e16fe02f507d0272e96c971f1eb96
 
 @app.route('/', defaults={'path':''})
 @app.route('/<path:path>')

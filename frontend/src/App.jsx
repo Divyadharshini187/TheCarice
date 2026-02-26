@@ -16,6 +16,7 @@ import Inventory from './pages/Inventory';
 import SalesReport from './pages/SalesReport';
 import LiveKitModal from './components/LiveKitModal.jsx';
 
+<<<<<<< HEAD
 const ProtectedRoute = ({ children }) => {
   const user = localStorage.getItem('currentUser');
   if (!user) {
@@ -24,10 +25,13 @@ const ProtectedRoute = ({ children }) => {
   return children;
 };
 
+=======
+>>>>>>> 19ca03704f5e16fe02f507d0272e96c971f1eb96
 function App() {
   return (
     <BrowserRouter>
       <Routes>
+<<<<<<< HEAD
         {/* Auth Routes */}
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
@@ -43,6 +47,12 @@ function App() {
           }
         >
           <Route index element={<Home />} />
+=======
+        <Route path="/" element={<Layout />}>
+          <Route index element={<Home />} />
+          <Route path="login" element={<Login />} />
+          <Route path="signup" element={<Signup />} />
+>>>>>>> 19ca03704f5e16fe02f507d0272e96c971f1eb96
           <Route path="profile" element={<Profile />} />
           <Route path="settings" element={<Settings />} />
           <Route path="merchant" element={<Merchant />} />
