@@ -11,35 +11,50 @@ import AddItems from './pages/AddItems';
 import Merchant from './pages/Merchant';
 import OrderConfirmation from './pages/OrderConfirmation';
 import Payment from './pages/Payment';
+import VerifyEmail from './pages/VerifyEmail';
+import Inventory from './pages/Inventory';
+import SalesReport from './pages/SalesReport';
 import LiveKitModal from './components/LiveKitModal.jsx';
 
-function App() {
-  const [showSupport, setShowSupport] = useState(false);
-  const handleSupportClick = (userInput) => {
-    if(userInput.toLowerCase().includes("vanakkam")){
-
-    
-    setShowSupport(true);
-    console.log("Support triggered via greeting!");
-    }
+const ProtectedRoute = ({ children }) => {
+  const user = localStorage.getItem('currentUser');
+  if (!user) {
+    return <Navigate to="/login" replace />;
   }
+  return children;
+};
+
+function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Layout />}>
-          <Route index element={<Home setShowSupport={setShowSupport} />} />
-          <Route path="login" element={<Login />} />
-          <Route path="signup" element={<Signup />} />
+        {/* Auth Routes */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/verify-email" element={<VerifyEmail />} />
+
+        {/* Protected Dashboard Routes */}
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <Layout />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<Home />} />
           <Route path="profile" element={<Profile />} />
           <Route path="settings" element={<Settings />} />
           <Route path="merchant" element={<Merchant />} />
           <Route path="add-items" element={<AddItems />} />
           <Route path="order-confirmation" element={<OrderConfirmation />} />
           <Route path="payment" element={<Payment />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="inventory" element={<Inventory />} />
+          <Route path="sales-report" element={<SalesReport />} />
         </Route>
+
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-      {showSupport && <LiveKitModal setShowSupport={setShowSupport} />}
     </BrowserRouter>
   );
 }
