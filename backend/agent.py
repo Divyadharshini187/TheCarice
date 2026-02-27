@@ -1,94 +1,195 @@
-from __future__ import annotations
-# change
-
-import os
-import asyncio
 import logging
+import os
+from dotenv import load_dotenv
 
-from livekit.agents import llm, AgentSession, Agent, JobContext
-import importlib
+from sarvam_tts import SarvamTTS
+from sarvam_stt import SarvamSTT
 
-# `server` may not be exported in some versions of the livekit.agents package.
-# Import it lazily and provide a no-op decorator fallback so the module can be
-# imported in environments where the server helper is not available.
-_agents_mod = importlib.import_module("livekit.agents")
-server = getattr(_agents_mod, "server", None)
-if server and hasattr(server, "rtc_session"):
-    rtc_session_decorator = server.rtc_session
-else:
-    def rtc_session_decorator(*args, **kwargs):
-        def _noop(fn):
-            return fn
-        return _noop
-from livekit.plugins import google, silero
+from livekit.agents import (
+    AutoSubscribe,
+    JobContext,
+    WorkerOptions,
+    cli,
+    RoomInputOptions,
+    function_tool,
+)
+from livekit.agents.voice import AgentSession
+from livekit.agents import Agent
+from livekit.plugins import groq, silero
 
-try:
-    from backend.api import AssistantFnc
-except Exception:
-    # Support running the module as a script or from tests where package
-    # imports may not be set up; fall back to a local import.
-    from api import AssistantFnc
+load_dotenv(".env.local")
 
 logger = logging.getLogger("food-court-agent")
+logging.basicConfig(level=logging.INFO)
+
+VAD_MODEL = silero.VAD.load()
 
 
-class Assistant(Agent):
-    """Minimal Assistant agent implementation used to start sessions."""
-    def __init__(self, *, instructions: str = "You are a helpful food-court assistant."):
-        super().__init__(instructions=instructions)
+# =========================
+# LANGUAGE DETECTION
+# =========================
+
+def detect_language(chat_msg) -> str:
+    try:
+        content = ""
+
+        if hasattr(chat_msg, "content"):
+            if isinstance(chat_msg.content, str):
+                content = chat_msg.content
+            elif isinstance(chat_msg.content, list):
+                content = " ".join(
+                    part.text for part in chat_msg.content
+                    if hasattr(part, "text")
+                )
+
+        if not content:
+            return "ta"
+
+        english_chars = sum(c.isascii() and c.isalpha() for c in content)
+        tamil_chars = sum("\u0b80" <= c <= "\u0bff" for c in content)
+
+        return "en" if english_chars > tamil_chars else "ta"
+
+    except Exception as e:
+        logger.error(f"Language detection failed: {e}")
+        return "ta"
 
 
-@rtc_session_decorator()
-async def my_agent(ctx: JobContext):
-    logger.info("Initializing agent for room: %s", ctx.room.name)
+# =========================
+# AGENT
+# =========================
 
-    fnc_ctx = AssistantFnc(ctx.room)
+class FoodOrderAgent(Agent):
+    def __init__(self):
+        self.customer_name = "விருந்தினர்"
+        self.current_order = []
+        self.order_confirmed = False
+        self.bill_generated = False
+        self.current_language = "ta"
+
+        super().__init__(
+            instructions=(
+                "You are a food court voice assistant.\n"
+                "STRICT LANGUAGE RULES:\n"
+                "- Default speak ONLY Tamil.\n"
+                "- If user speaks English, switch to ONLY English.\n"
+                "- Never mix Tamil and English.\n"
+                "- Keep responses short and polite.\n"
+                "\n"
+                "ORDER FLOW:\n"
+                "- When user adds items → call add_item.\n"
+                "- When user asks summary → call get_order_summary.\n"
+                "- When user confirms → call place_order ONCE.\n"
+                "- After placing order → call print_bill ONCE.\n"
+                "- Never call tools repeatedly.\n"
+            ),
+            tools=[
+                self.add_item,
+                self.get_order_summary,
+                self.place_order,
+                self.print_bill,
+            ],
+        )
+
+    # 🔥 language switching hook
+    async def on_user_message(self, chat_msg):
+        self.current_language = detect_language(chat_msg)
+        await super().on_user_message(chat_msg)
+
+    async def on_enter(self):
+        await self.session.say(
+            "வணக்கம்! என்ன ஆர்டர் செய்ய விரும்புகிறீர்கள்?",
+            allow_interruptions=True,
+        )
+
+    # =========================
+    # TOOLS
+    # =========================
+
+    @function_tool
+    async def add_item(self, item: str, quantity: int = 1) -> str:
+        self.current_order.append((item, quantity))
+
+        if self.current_language == "en":
+            return f"Added {quantity} {item}."
+
+        return f"{quantity} {item} சேர்க்கப்பட்டது."
+
+    @function_tool
+    async def get_order_summary(self, unused: str = None) -> str:
+        if not self.current_order:
+            return (
+                "Your order is empty."
+                if self.current_language == "en"
+                else "உங்கள் ஆர்டர் காலியாக உள்ளது."
+            )
+
+        summary = ", ".join(
+            f"{item} - {qty}" for item, qty in self.current_order
+        )
+
+        if self.current_language == "en":
+            return f"Your order: {summary}"
+
+        return f"உங்கள் ஆர்டர்: {summary}"
+
+    @function_tool
+    async def place_order(self, unused: str = None) -> str:
+        if self.order_confirmed:
+            return (
+                "Order already confirmed."
+                if self.current_language == "en"
+                else "ஆர்டர் ஏற்கனவே உறுதிப்படுத்தப்பட்டது."
+            )
+
+        self.order_confirmed = True
+        logger.info("Order placed")
+
+        return (
+            "Your order has been confirmed."
+            if self.current_language == "en"
+            else "உங்கள் ஆர்டர் உறுதிப்படுத்தப்பட்டது."
+        )
+
+    @function_tool
+    async def print_bill(self, unused: str = None) -> str:
+        if self.bill_generated:
+            return (
+                "Bill already generated."
+                if self.current_language == "en"
+                else "பில் ஏற்கனவே உருவாக்கப்பட்டது."
+            )
+
+        self.bill_generated = True
+        logger.info("Bill printed")
+
+        return (
+            "Your bill is ready."
+            if self.current_language == "en"
+            else "உங்கள் பில் தயாராக உள்ளது."
+        )
+
+
+# =========================
+# ENTRYPOINT
+# =========================
+
+async def entrypoint(ctx: JobContext):
+    await ctx.connect(auto_subscribe=AutoSubscribe.AUDIO_ONLY)
 
     session = AgentSession(
-        llm=google.realtime.RealtimeModel(
-            voice="Puck",
-            api_key=os.getenv("GOOGLE_API_KEY"),
-        ),
-        vad=silero.VAD.load(),
-        tools=llm.find_function_tools(fnc_ctx),
-        allow_interruptions=True,
+        vad=VAD_MODEL,
+        stt=SarvamSTT(api_key=os.environ["SARVAM_API_KEY"], vad=VAD_MODEL),
+        llm=groq.LLM(model="llama-3.3-70b-versatile"),
+        tts=SarvamTTS(api_key=os.environ["SARVAM_API_KEY"]),
     )
-
-    @session.on("user_speech_finished")
-    def on_user_speech_finished(event):
-        # avoid evaluating llm.* annotations at define-time (they may not exist)
-        logger.info("User speech finished: %s", getattr(event, "text", ""))
-        session.conversation.item.create(
-            llm.ChatMessage(role="user", content=getattr(event, "text", ""))
-        )
-        session.response.create()
-
-    @session.on("agent_speech_started")
-    def on_agent_speech_started(event):
-        logger.info("Agent started speaking")
-
-    @session.on("error")
-    def on_error(event):
-        logger.error("Agent session error: %s", getattr(event, "error", event))
 
     await session.start(
         room=ctx.room,
-        agent=Assistant(),
+        agent=FoodOrderAgent(),
+        room_options=RoomInputOptions(close_on_disconnect=False),
     )
 
-    logger.info("Agent session started in room: %s", ctx.room.name)
 
-    # 🗣️ Initial greeting in Tamil
-    session.conversation.item.create(
-        llm.ChatMessage(role="assistant", content="வணக்கம்! நான் உங்கள் உணவக உதவியாளர். உங்கள் பெயர் என்ன?")
-    )
-    session.response.create()
-
-    shutdown_evt = asyncio.Event()
-
-    @ctx.room.on("disconnected")
-    def on_disconnected():
-        logger.info("Room disconnected")
-        shutdown_evt.set()
-
-    await shutdown_evt.wait()
+if __name__ == "__main__":
+    cli.run_app(WorkerOptions(entrypoint_fnc=entrypoint))

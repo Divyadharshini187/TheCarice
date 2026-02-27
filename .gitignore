@@ -1,1 +1,7 @@
-node_modules
+".env.local" 
+".env" 
+"*.env" 
+"backend/credentials.json" 
+"backend/.env.local" 
+"backend/credentials.json" 
+"backend/.env.local" 
